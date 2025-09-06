@@ -35,12 +35,16 @@ class BTBmsCoordinator(DataUpdateCoordinator[BMSsample]):
             hass=hass,
             logger=LOGGER,
             name=config_entry.title,
-            update_interval=timedelta(seconds=UPDATE_INTERVAL),
+            update_interval=timedelta(
+                seconds=config_entry.options.get("polling_period", UPDATE_INTERVAL)
+            ),
             always_update=False,  # only update when sensor value has changed
             config_entry=config_entry,
         )
         self._device: Final[BaseBMS] = bms_device
-        self._link_q: deque[bool] = deque([False], maxlen=100)  # track BMS update issues
+        self._link_q: deque[bool] = deque(
+            [False], maxlen=100
+        )  # track BMS update issues
         self._mac: Final[str] = ble_device.address
         self._stale: bool = False  # indicates no BMS response for significant time
 

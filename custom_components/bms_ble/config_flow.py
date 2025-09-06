@@ -13,12 +13,16 @@ from homeassistant.components.bluetooth import (
 )
 from homeassistant.config_entries import ConfigFlowResult
 from homeassistant.const import CONF_ADDRESS, CONF_ID, CONF_MODEL, CONF_NAME
+from homeassistant.core import callback
 from homeassistant.helpers.device_registry import format_mac
 from homeassistant.helpers.importlib import async_import_module
 from homeassistant.helpers.selector import (
     SelectOptionDict,
     SelectSelector,
     SelectSelectorConfig,
+    NumberSelector,
+    NumberSelectorConfig,
+    NumberSelectorMode,
 )
 
 from .const import BMS_TYPES, DOMAIN, LOGGER
@@ -41,6 +45,12 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         def model(self) -> str:
             """Return BMS type in capital letters, e.g. 'DUMMY BMS'."""
             return self.type.rsplit(".", 1)[-1].replace("_", " ").upper()
+
+    @staticmethod
+    @callback
+    def async_get_options_flow(config_entry):
+        """Create the options flow."""
+        return OptionsFlow()
 
     def __init__(self) -> None:
         """Initialize the config flow."""
@@ -165,6 +175,40 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     vol.Required(CONF_ADDRESS): SelectSelector(
                         SelectSelectorConfig(options=titles)
                     )
+                }
+            ),
+        )
+
+
+class OptionsFlow(config_entries.OptionsFlow):
+    async def async_step_init(self, user_input):
+        """Manage the options."""
+        if user_input:
+            return self.async_create_entry(data=user_input)
+
+        user_input = self.config_entry.options
+        if not user_input:
+            user_input = {
+                "polling_period": None,
+            }
+
+        return self.async_show_form(
+            data_schema=vol.Schema(
+                {
+                    vol.Optional(
+                        "polling_period",
+                        description={
+                            "suggested_value": user_input.get("polling_period")
+                        },
+                    ): NumberSelector(
+                        NumberSelectorConfig(
+                            mode=NumberSelectorMode.BOX,
+                            min=5,
+                            max=60,
+                            step=1,
+                            unit="seconds",
+                        )
+                    ),
                 }
             ),
         )
