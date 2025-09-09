@@ -48,7 +48,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     @staticmethod
     @callback
-    def async_get_options_flow(config_entry):
+    def async_get_options_flow(config_entry: config_entries.ConfigEntry) -> config_entries.OptionsFlow:
         """Create the options flow."""
         return OptionsFlow()
 
@@ -181,7 +181,8 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
 
 class OptionsFlow(config_entries.OptionsFlow):
-    async def async_step_init(self, user_input):
+
+    async def async_step_init(self, user_input: dict | None) -> ConfigFlowResult:
         """Manage the options."""
         if user_input:
             return self.async_create_entry(data=user_input)
@@ -203,10 +204,10 @@ class OptionsFlow(config_entries.OptionsFlow):
                     ): NumberSelector(
                         NumberSelectorConfig(
                             mode=NumberSelectorMode.BOX,
-                            min=5,
+                            min=1,
                             max=60,
                             step=1,
-                            unit="seconds",
+                            unit_of_measurement="seconds",
                         )
                     ),
                 }

@@ -191,7 +191,7 @@
     {
       "local_name": "SP1??B*",
       "service_uuid": "0000fff0-0000-1000-8000-00805f9b34fb"
-    },    
+    },
     {
       "local_name": "CSY*",
       "service_uuid": "0000fff0-0000-1000-8000-00805f9b34fb"
@@ -340,5 +340,5 @@
   ],
   "quality_scale": "silver",
   "requirements": [],
-  "version": "1.20.0-m3_conf_polling.0"
+  "version": "1.20.0-m3.0"
 }
